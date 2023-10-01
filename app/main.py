@@ -10,28 +10,34 @@ async def root():
 
 @app.get("/todolist")
 async def get_todolist():
-    return {"todos": todos}, status.HTTP_200_OK
+    return {"todos": todos}
 
 @app.get("/todolist/{todo_id}")
-async def get_todo_by_id():
+async def get_todo_by_id(todo_id: int):
     for todo in todos:
-        if todo.id == id:
-            return {"todo": todo}, status.HTTP_200_OK
+        if todo.id == todo_id:
+            return {"todo": todo}
     return {  }
 
-@app.post("/todolist")
+@app.post("/todolist", status_code=status.HTTP_201_CREATED)
 async def create_todo(todo: Todo):
     todos.append(todo)
-    return {"message": "todo was created successfully"}, status.HTTP_201_CREATED
+    return {"message": "todo has been created successfully"}
 
-@app.put("/todolist/{todo_id}")
-async def update_todo():
+@app.put("/todolist/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def update_todo(todo_id: int, new_todo: Todo):
     for todo in todos:
-        if todo.id == id:
-            return {"todo": todo}, status.HTTP_204_NO_CONTENT
+        if todo.id == todo_id:
+            todo = new_todo
+            todo.id = todo_id
+            return {"message": "todo has been updated successfully"}
     return {  }
     
 
-@app.get("/todolist/{todo_id}")
-async def delete_todo():
-    return {"message: tpdo deleted"}
+@app.delete("/todolist/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_todo(todo_id: int):
+    for todo in todos:
+        if todo.id == todo_id:
+           todos.remove(todo)
+           return {"message: todo has been deleted successfully"}
+    
